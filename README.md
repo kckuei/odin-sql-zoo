@@ -1,5 +1,5 @@
 # odin-sql-zoo
-Solutions to exercises 0-9 on SQL Zoo using `MYSQL`.
+Solutions to exercises 0-9 on [SQL Zoo](https://sqlzoo.net/wiki/SQL_Tutorial) with `MYSQL`.
 
 
 ## 0 SELECT basics
@@ -247,13 +247,15 @@ FROM world
 WHERE (capital LIKE CONCAT(name, '%')) AND (capital != name)
 ```
 
-
-
 ## 2 SELECT from World
 In which we query the World country profile table.
 
+
 ## 3 SELECT from Nobel
 Additional practice of the basic features using a table of Nobel Prize winners.
+
+
+
 ## 4 SELECT within SELECT
 In which we form queries using other queries.
 
