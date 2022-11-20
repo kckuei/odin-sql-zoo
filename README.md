@@ -254,6 +254,39 @@ In which we query the World country profile table.
 ## 3 SELECT from Nobel
 Additional practice of the basic features using a table of Nobel Prize winners.
 
+<table class="db_ref">
+    <caption>nobel</caption>
+    <tbody>
+        <tr>
+            <th>yr</th>
+            <th>subject</th>
+            <th>winner</th>
+        </tr>
+        <tr>
+            <td>1960</td>
+            <td>Chemistry</td>
+            <td align="left">Willard F. Libby</td>
+        </tr>
+        <tr>
+            <td>1960</td>
+            <td>Literature</td>
+            <td align="left">Saint-John Perse</td>
+        </tr>
+        <tr>
+            <td>1960</td>
+            <td>Medicine</td>
+            <td align="left">Sir Frank Macfarlane Burnet</td>
+        </tr>
+        <tr>
+            <td>1960</td>
+            <td>Medicine</td>
+            <td align="left">Peter Madawar</td>
+        </tr>
+        <tr>
+            <td colspan="5">...</td>
+        </tr>
+    </tbody>
+</table>
 
 
 ## 4 SELECT within SELECT
