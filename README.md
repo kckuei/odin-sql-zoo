@@ -298,6 +298,162 @@ In which we apply aggregate functions. more the same
 ## 6 JOIN
 In which we join two tables; game and goals. previously music tutorial
 
+<table class="db_ref">
+    <caption>game</caption>
+    <tbody>
+        <tr>
+            <th>id</th>
+            <th>mdate</th>
+            <th>stadium</th>
+            <th>team1</th>
+            <th>team2</th>
+        </tr>
+        <tr>
+            <td>1001</td>
+            <td>8 June 2012</td>
+            <td>National Stadium, Warsaw</td>
+            <td>POL</td>
+            <td>GRE</td>
+        </tr>
+        <tr>
+            <td>1002</td>
+            <td>8 June 2012</td>
+            <td>Stadion Miejski (Wroclaw)</td>
+            <td>RUS</td>
+            <td>CZE</td>
+        </tr>
+        <tr>
+            <td>1003</td>
+            <td>12 June 2012</td>
+            <td>Stadion Miejski (Wroclaw)</td>
+            <td>GRE</td>
+            <td>CZE</td>
+        </tr>
+        <tr>
+            <td>1004</td>
+            <td>12 June 2012</td>
+            <td>National Stadium, Warsaw</td>
+            <td>POL</td>
+            <td>RUS</td>
+        </tr>
+        <tr>
+            <td colspan="5">...</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="db_ref">
+    <caption>goal</caption>
+    <tbody>
+        <tr>
+            <th>matchid</th>
+            <th>teamid</th>
+            <th>player</th>
+            <th>gtime</th>
+        </tr>
+        <tr>
+            <td>1001</td>
+            <td>POL</td>
+            <td>Robert Lewandowski</td>
+            <td>17</td>
+        </tr>
+        <tr>
+            <td>1001</td>
+            <td>GRE</td>
+            <td>Dimitris Salpingidis</td>
+            <td>51</td>
+        </tr>
+        <tr>
+            <td>1002</td>
+            <td>RUS</td>
+            <td>Alan Dzagoev</td>
+            <td>15</td>
+        </tr>
+        <tr>
+            <td>1002</td>
+            <td>RUS</td>
+            <td>Roman Pavlyuchenko</td>
+            <td>82</td>
+        </tr>
+        <tr>
+            <td colspan="5">...</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="db_ref">
+    <caption>eteam</caption>
+    <tbody>
+        <tr>
+            <th>id</th>
+            <th>teamname</th>
+            <th>coach</th>
+        </tr>
+        <tr>
+            <td>POL</td>
+            <td>Poland</td>
+            <td>Franciszek Smuda</td>
+        </tr>
+        <tr>
+            <td>RUS</td>
+            <td>Russia</td>
+            <td>Dick Advocaat</td>
+        </tr>
+        <tr>
+            <td>CZE</td>
+            <td>Czech Republic</td>
+            <td>Michal Bilek</td>
+        </tr>
+        <tr>
+            <td>GRE</td>
+            <td>Greece</td>
+            <td>Fernando Santos</td>
+        </tr>
+        <tr>
+            <td colspan="5">...</td>
+        </tr>
+    </tbody>
+</table>
+
+### 13. 
+
+<table class="sqlmine">
+    <tbody>
+        <tr>
+            <th>mdate</th>
+            <th>team1</th>
+            <th>score1</th>
+            <th>team2</th>
+            <th>score2</th>
+        </tr>
+        <tr>
+            <td>1 July 2012</td>
+            <td>ESP</td>
+            <td class="r">4</td>
+            <td>ITA </td>
+            <td class="r">0</td>
+        </tr>
+        <tr>
+            <td>10 June 2012</td>
+            <td>ESP</td>
+            <td class="r">1</td>
+            <td>ITA</td>
+            <td class="r">1</td>
+        </tr>
+        <tr>
+            <td>10 June 2012</td>
+            <td>IRL</td>
+            <td class="r">1</td>
+            <td>CRO</td>
+            <td class="r">3</td>
+        </tr>
+        <tr>
+            <td colspan="5">...</td>
+        </tr>
+    </tbody>
+</table>
+
+
 ## 7 More JOIN operations
 In which we join actors to movies in the Movie Database.
 
