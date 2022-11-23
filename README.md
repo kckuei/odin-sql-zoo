@@ -460,6 +460,90 @@ In which we join actors to movies in the Movie Database.
 ## 8 Using Null
 In which we look at teachers in departments. previously Scottish Parliament
 
+<table class="zoo db_ref">
+    <caption>teacher</caption>
+    <tbody>
+        <tr>
+            <th>id</th>
+            <th>dept</th>
+            <th>name</th>
+            <th>phone</th>
+            <th>mobile</th>
+        </tr>
+        <tr>
+            <td align="right">101</td>
+            <td align="right">1</td>
+            <td>Shrivell</td>
+            <td align="right">2753</td>
+            <td>07986 555 1234</td>
+        </tr>
+        <tr>
+            <td align="right">102</td>
+            <td align="right">1</td>
+            <td>Throd</td>
+            <td align="right">2754</td>
+            <td>07122 555 1920</td>
+        </tr>
+        <tr>
+            <td align="right">103</td>
+            <td align="right">1</td>
+            <td>Splint</td>
+            <td align="right">2293</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td align="right">104</td>
+            <td align="right"></td>
+            <td>Spiregrain</td>
+            <td align="right">3287</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td align="right">105</td>
+            <td align="right">2</td>
+            <td>Cutflower</td>
+            <td align="right">3212</td>
+            <td>07996 555 6574</td>
+        </tr>
+        <tr>
+            <td align="right">106</td>
+            <td align="right"></td>
+            <td>Deadyawn</td>
+            <td align="right">3345</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="5">...</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="zoo db_ref">
+    <caption>dept</caption>
+    <tbody>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+        </tr>
+        <tr>
+            <td align="right">1</td>
+            <td>Computing</td>
+        </tr>
+        <tr>
+            <td align="right">2</td>
+            <td>Design</td>
+        </tr>
+        <tr>
+            <td align="right">3</td>
+            <td>Engineering</td>
+        </tr>
+        <tr>
+            <td colspan="2">...</td>
+        </tr>
+    </tbody>
+</table>
+
+
 ## 8+ Numeric Examples
 In which we look at a survey and deal with some more complex calculations.
 
