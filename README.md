@@ -555,3 +555,34 @@ In which we measure the impact of COVID-19
 
 ## 9 Self join
 In which we join Edinburgh bus routes to Edinburgh bus routes.
+
+<table class="db_ref">
+    <tbody><tr>
+        <th><b>stops</b></th>
+    </tr>
+    <tr>
+        <td><i>id</i></td>
+    </tr>
+    <tr>
+        <td>name</td>
+    </tr>
+</tbody></table>
+<p><br />
+</p>
+<table class="db_ref">
+    <tbody><tr>
+        <th><b>route</b></th>
+    </tr>
+    <tr>
+        <td><i>num</i></td>
+    </tr>
+    <tr>
+        <td><i>company</i></td>
+    </tr>
+    <tr>
+        <td><i>pos</i></td>
+    </tr>
+    <tr>
+        <td>stop</td>
+    </tr>
+</tbody></table>
