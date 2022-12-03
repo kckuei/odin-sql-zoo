@@ -200,7 +200,7 @@ Cuba and Togo have four character names.
 
 ```sql
 SELECT name FROM world
- WHERE name LIKE '____'
+ WHERE name LIKE '____';
 ```
 
 ### 11. Find the country where the name is the capital city.
@@ -209,7 +209,7 @@ The capital of **Luxembourg** is **Luxembourg**. Show all the countries where th
 ```sql
 SELECT name
   FROM world
- WHERE name = capital
+ WHERE name = capital;
 ```
 
 ### 12. Find the country where the capital is the country plus "City".
@@ -218,7 +218,7 @@ The capital of **Mexico** is **Mexico City**. Show all the countries where the c
 ```sql
 SELECT name
   FROM world
- WHERE capital LIKE CONCAT(name, ' ', 'City')
+ WHERE capital LIKE CONCAT(name, ' ', 'City');
 ```
 
 ### 13. Find the capital and the name where the capital includes the name of the country. 
@@ -235,7 +235,7 @@ You should include **Mexico City** as it is longer than **Mexico**. You should n
 ```sql
 SELECT capital, name
 FROM world
-WHERE (capital LIKE CONCAT(name, '%')) AND (capital !=  name)
+WHERE (capital LIKE CONCAT(name, '%')) AND (capital !=  name);
 ```
 
 ### 15. Show the name and the extension where the capital is an extension of name of the country.
@@ -244,11 +244,140 @@ For **Monaco-Ville** the name is **Monaco** and the extension is ** -Ville**. Yo
 ```sql
 SELECT name, REPLACE(capital, name ,'')
 FROM world
-WHERE (capital LIKE CONCAT(name, '%')) AND (capital != name)
+WHERE (capital LIKE CONCAT(name, '%')) AND (capital != name);
 ```
+
 
 ## 2 SELECT from World
 In which we query the World country profile table.
+
+### 1. Read the notes about this table. 
+Observe the result of running this SQL command to show the name, continent and population of all countries.
+
+```sql
+SELECT name, continent, population FROM world;
+```
+
+### 2. How to use WHERE to filter records. Show the name for the countries that have a population of at least 200 million. 
+200 million is 200000000, there are eight zeros.
+
+```sql 
+SELECT name FROM world
+WHERE population >= 200000000;
+```
+
+### 3. Give the name and the per capita GDP for those countries with a population of at least 200 million.
+
+```sql
+SELECT name, gdp/population
+FROM world
+WHERE population >= 200000000;
+```
+
+### 4. Show the name and population in millions for the countries of the continent 'South America'.
+Divide the population by 1000000 to get population in millions.
+
+```sql
+SELECT name, population/1000000
+FROM world
+WHERE continent = 'South America';
+```
+
+### 5. Show the name and population for France, Germany, Italy
+
+```
+SELECT name, population
+FROM world
+WHERE name in ('France', 'Germany', 'Italy');
+```
+
+### 6. Show the countries which have a name that includes the word 'United'
+
+```
+SELECT name
+FROM world
+WHERE name LIKE '%United%';
+```
+
+### 7. Show the countries that are big by area or big by population. 
+* Show name, population and area.
+* Two ways to be big: A country is big if it has an area of more than 3 million sq km or it has a population of more than 250 million.
+
+```sql
+SELECT name, population, area
+FROM world
+WHERE (area > 3000000) OR (population > 250000000);
+```
+
+### 8. Exclusive OR (XOR). Show the countries that are big by area (more than 3 million) or big by population (more than 250 million) but not both.
+* Show name, population and area.
+* Australia has a big area but a small population, it should be included.
+* Indonesia has a big population but a small area, it should be included.
+* China has a big population and big area, it should be excluded.
+* United Kingdom has a small population and a small area, it should be excluded.
+
+```sql
+SELECT name, population, area
+FROM world
+WHERE (area > 3000000) XOR (population > 250000000);
+```
+
+### 9. Show the name and population in millions and the GDP in billions for the countries of the continent 'South America'. 
+* Use the ROUND function to show the values to two decimal places.
+* For South America show population in millions and GDP in billions both to 2 decimal places.
+
+```sql
+SELECT name, ROUND(population/1000000,2), ROUND(gdp/1000000000,2)
+FROM world
+WHERE continent = 'South America';
+```
+
+### 10. Show the name and per-capita GDP for those countries with a GDP of at least one trillion (1000000000000; that is 12 zeros). 
+* Round this value to the nearest 1000.
+* Show per-capita GDP for the trillion dollar countries to the nearest $1000.
+
+```sql
+SELECT name, ROUND(gdp/population/1000,0)*1000
+FROM world
+WHERE gdp >= 1000000000000;
+```
+
+### 11. Show the name and capital where the name and the capital have the same number of characters.
+* Greece has capital Athens. Each of the strings 'Greece', and 'Athens' has 6 characters.
+* You can use the LENGTH function to find the number of characters in a string
+
+```sql
+SELECT name, capital
+FROM world
+WHERE LENGTH(name) = LENGTH(capital);
+```
+
+### 12. Show the name and the capital where the first letters of each match. 
+* Don't include countries where the name and the capital are the same word.
+* The capital of Sweden is Stockholm. Both words start with the letter 'S'.
+* You can use the function LEFT to isolate the first character.
+* You can use <> as the NOT EQUALS operator.
+
+```sql
+SELECT name, capital
+FROM world
+WHERE (LEFT(name, 1) = LEFT(capital, 1)) AND name <> capital;
+```
+
+### 13. Find the country that has all the vowels and no spaces in its name.
+* Equatorial Guinea and Dominican Republic have all of the vowels (a e i o u) in the name. They don't count because they have more than one word in the name.
+* You can use the phrase name NOT LIKE '%a%' to exclude characters from your results.
+
+```sql
+SELECT name
+   FROM world
+WHERE name NOT LIKE '% %'
+  AND name LIKE '%a%'
+  AND name LIKE '%e%'
+  AND name LIKE '%i%'
+  AND name LIKE '%o%'
+  AND name LIKE '%u%'
+```
 
 
 ## 3 SELECT from Nobel
@@ -289,11 +418,140 @@ Additional practice of the basic features using a table of Nobel Prize winners.
 </table>
 
 
+### 1. Change the query shown so that it displays Nobel prizes for 1950.
+
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE yr = 1950;
+```
+
+### 2. Show who won the 1962 prize for literature.
+
+```sql
+SELECT winner
+FROM nobel
+WHERE yr = 1962 AND subject = 'literature';
+```
+
+### 3. Show the year and subject that won 'Albert Einstein' his prize.
+
+```sql
+SELECT yr, subject
+FROM nobel
+WHERE winner = 'Albert Einstein';
+```
+
+### 4. Give the name of the 'peace' winners since the year 2000, including 2000.
+
+```sql
+SELECT winner
+FROM nobel
+WHERE (subject = 'peace') AND (yr >= 2000);
+```
+
+### 5. Show all details (yr, subject, winner) of the literature prize winners for 1980 to 1989 inclusive.
+
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE (subject = 'literature') AND (yr BETWEEN 1980 AND 1989);
+```
+
+### 6. Show all details of the presidential winners:
+* Theodore Roosevelt
+* Thomas Woodrow Wilson
+* Jimmy Carter
+* Barack Obama
+
+```sql
+SELECT * 
+FROM nobel
+WHERE winner IN ('Theodore Roosevelt',
+                 'Woodrow Wilson',
+                 'Jimmy Carter',
+                 'Barack Obama')
+```
+
+### 7. Show the winners with first name John
+
+```sql
+SELECT winner FROM nobel
+WHERE winner LIKE 'John %'
+```
+
+### 8. Show the year, subject, and name of physics winners for 1980 together with the chemistry winners for 1984.
+
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE ((yr = 1980) AND (subject = 'physics')) OR
+      ((yr = 1984) AND (subject = 'chemistry'));
+```
+
+### 9. Show the year, subject, and name of winners for 1980 excluding chemistry and medicine
+
+```sql
+SELECT yr, subject, winner FROM nobel
+WHERE (yr = 1980) AND ((subject != 'chemistry') AND (subject != 'medicine'));
+```
+
+### 10. Show year, subject, and name of people who won a 'Medicine' prize in an early year (before 1910, not including 1910) together with winners of a 'Literature' prize in a later year (after 2004, including 2004)
+
+```sql
+SELECT yr, subject, winner
+FROM nobel
+WHERE (subject = 'Medicine' AND yr < 1910) OR
+      (subject = 'Literature' AND yr >= 2004);
+```
+
+### 11. Find all details of the prize won by PETER GRÜNBERG
+* The u in his name has an umlaut. 
+* You may find this link useful https://en.wikipedia.org/wiki/%C3%9C#Keyboarding
+
+```sql
+SELECT *
+FROM nobel 
+WHERE winner LIKE 'PETER GRÜNBERG';
+```
+
+### 12. Find all details of the prize won by EUGENE O'NEILL
+* You can't put a single quote in a quote string directly. 
+* You can use two single quotes within a quoted string.
+
+```sql
+SELECT *
+FROM nobel
+WHERE winner LIKE 'EUGENE O''NEILL';
+```
+
+### 13. Knights in order: List the winners, year and subject where the winner starts with Sir. Show the the most recent first, then by name order.
+
+```sql
+SELECT winner, yr, subject
+FROM nobel
+WHERE winner LIKE 'Sir%'
+ORDER BY yr DESC;
+```
+
+### 14. Show the 1984 winners and subject ordered by subject and winner name; but list chemistry and physics last.
+* The expression subject IN ('chemistry','physics') can be used as a value - it will be 0 or 1.
+
+```sql
+SELECT winner, subject
+FROM nobel
+WHERE yr = 1984
+ORDER BY subject IN ('chemistry', 'physics'), subject, winner
+```
+
+
 ## 4 SELECT within SELECT
 In which we form queries using other queries.
 
+
 ## 5 SUM and COUNT
 In which we apply aggregate functions. more the same
+
 
 ## 6 JOIN
 In which we join two tables; game and goals. previously music tutorial
@@ -457,6 +715,7 @@ In which we join two tables; game and goals. previously music tutorial
 ## 7 More JOIN operations
 In which we join actors to movies in the Movie Database.
 
+
 ## 8 Using Null
 In which we look at teachers in departments. previously Scottish Parliament
 
@@ -547,8 +806,10 @@ In which we look at teachers in departments. previously Scottish Parliament
 ## 8+ Numeric Examples
 In which we look at a survey and deal with some more complex calculations.
 
+
 ## 9- Window function
 In which we examine UK general election results.
+
 
 ## 9+ COVID 19
 In which we measure the impact of COVID-19
