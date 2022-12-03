@@ -63,7 +63,7 @@ The example uses a WHERE clause to show the population of 'France'. Note that st
 
 ```sql
 SELECT population FROM world
-  WHERE name = 'Germany'
+  WHERE name = 'Germany';
 ```
 
 ### 2. Scandinavia
@@ -84,7 +84,7 @@ Which countries are not too small and not too big? `BETWEEN` allows range checki
 Solution:
 ```sql
 SELECT name, area FROM world
-  WHERE area BETWEEN 200000 AND 250000
+  WHERE area BETWEEN 200000 AND 250000;
 ```
 
 
@@ -128,14 +128,14 @@ You can use `WHERE` name `LIKE` 'B%' to find the countries that start with "B". 
 
 ```sql 
 SELECT name FROM world
-  WHERE name LIKE 'Y%'
+  WHERE name LIKE 'Y%';
 ```
 
 ### 2. Find the countries that end with y
 
 ```sql 
 SELECT name FROM world
-  WHERE name LIKE '%y'
+  WHERE name LIKE '%y';
 ```
 
 ### 3. Find the countries that contain the letter x
@@ -143,7 +143,7 @@ Luxembourg has an x - so does one other country. List them both.
 
 ```sql
 SELECT name FROM world
-  WHERE name LIKE '%x%'
+  WHERE name LIKE '%x%';
 ```
 
 ### 4. Find the countries that end with land
@@ -151,7 +151,7 @@ Iceland, Switzerland end with land - but are there others?
 
 ```sql
 SELECT name FROM world
-  WHERE name LIKE '%land'
+  WHERE name LIKE '%land';
 ```
 
 ### 5. Find the countries that start with C and end with ia
@@ -159,7 +159,7 @@ Columbia starts with a C and ends with ia - there are two more like this.
 
 ```sql
 SELECT name FROM world
-  WHERE name LIKE 'C%ia'
+  WHERE name LIKE 'C%ia';
 ```
 
 ### 6. Find the country that has oo in the name.
@@ -167,7 +167,7 @@ Greece has a double e - who has a double o?
 
 ```sql 
 SELECT name FROM world
-  WHERE name LIKE '%oo%'
+  WHERE name LIKE '%oo%';
 ```
 
 ### 7. Find the coutnries that have three or more a in the name.
@@ -175,7 +175,7 @@ Bahamas has three a - who else?
 
 ```sql
 SELECT name FROM world
-  WHERE name LIKE '%a%a%a%'
+  WHERE name LIKE '%a%a%a%';
 ```
 
 ### 8. Find the countries that have "t" as the second character.
@@ -184,7 +184,7 @@ India and Angola have an **n** as the second character. You can use the undersco
 ```sql
 SELECT name FROM world
  WHERE name LIKE '_t%'
-ORDER BY name
+ORDER BY name;
 ```
 
 ### 9. Find the countries that have two "o" characters separated by two others.
@@ -192,7 +192,7 @@ Les**o**th**o** and M**o**ld**o**va both have two o characters separated by two 
 
 ```sql
 SELECT name FROM world
- WHERE name LIKE '%o__o%'
+ WHERE name LIKE '%o__o%';
 ```
 
 ### 10. Find the countries that have exactly four characters.
@@ -552,6 +552,102 @@ In which we examine UK general election results.
 
 ## 9+ COVID 19
 In which we measure the impact of COVID-19
+
+### COVID-19 Data
+Notes on the data: This data was assembled based on work done by Rodrigo Pombo based on John Hopkins University, based on World Health Organisation. The data was assembled 21st April 2020 - there are no plans to keep this data set up to date.
+
+### Window Function
+The SQL Window functions include LAG, LEAD, RANK and NTILE. These functions operate over a "window" of rows - typically these are rows in the table that are in some sense adjacent.
+
+### 3. 
+
+#### LAG operation
+Here is the correct query showing the cases for the day before:
+
+```sql
+SELECT name, DAY(whn), confirmed,
+   LAG(confirmed, 1) OVER (partition by name ORDER BY whn) AS lag
+ FROM covid
+WHERE name = 'Italy'
+AND MONTH(whn) = 3
+ORDER BY whn
+```
+
+Notice how the values in the LAG column match the value of the row diagonally above and to the left.
+<table class="sqlmine">
+    <tbody>
+        <tr>
+            <th>name</th>
+            <th>DAY(whn)</th>
+            <th>confirmed</th>
+            <th>dbf</th>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">1</td>
+            <td class="r" style="background:pink">1694</td>
+            <td class="r">null</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">2</td>
+            <td class="r">2036</td>
+            <td class="r" style="background:pink">1694</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">3</td>
+            <td class="r">2502</td>
+            <td class="r">2036</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">4</td>
+            <td class="r">3089</td>
+            <td class="r">2502</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">5</td>
+            <td class="r" style="background:skyblue">3858</td>
+            <td class="r">3089</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">6</td>
+            <td class="r">4636</td>
+            <td class="r" style="background:skyblue">3858</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">7</td>
+            <td class="r">5883</td>
+            <td class="r">4636</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">8</td>
+            <td class="r">7375</td>
+            <td class="r">5883</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">9</td>
+            <td class="r">9172</td>
+            <td class="r">7375</td>
+        </tr>
+        <tr>
+            <td>Italy</td>
+            <td class="r">10</td>
+            <td class="r">10149</td>
+            <td class="r">9172</td>
+        </tr>
+        <tr>
+            <td colspan="4">...</td>
+        </tr>
+    </tbody>
+</table>
+
 
 ## 9 Self join
 In which we join Edinburgh bus routes to Edinburgh bus routes.
