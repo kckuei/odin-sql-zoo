@@ -696,6 +696,80 @@ WHERE population >
 ## 5 SUM and COUNT
 In which we apply aggregate functions. more the same
 
+### 1. Show the total population of the world.
+* world(name, continent, area, population, gdp)
+
+```sql
+SELECT SUM(population)
+FROM world;
+```
+
+### 2. List all the continents - just once each.
+
+```sql
+SELECT DISTINCT continent
+FROM world;
+```
+
+```sql
+SELECT continent
+FROM world
+GROUP BY continent;
+```
+
+### 3. Give the total GDP of Africa
+
+```sql
+SELECT SUM(gdp) as total_GDP
+FROM world
+GROUP BY continent
+HAVING continent = 'Africa'
+```
+
+### 4. How many countries have an area of at least 1000000
+
+```sql
+SELECT COUNT(name)
+FROM world
+WHERE area >= 1000000;
+```
+
+### 5. What is the total population of ('Estonia', 'Latvia', 'Lithuania')
+
+```sql
+SELECT SUM(population)
+FROM world
+WHERE name in ('Estonia', 'Latvia', 'Lithuania');
+```
+
+### 6. For each continent show the continent and number of countries.
+
+```sql
+SELECT continent, COUNT(name)
+FROM world
+GROUP BY continent;
+```
+
+### 7. For each continent show the continent and number of countries with populations of at least 10 million.
+
+```sql
+SELECT t1.continent, COUNT(t1.name)
+FROM (SELECT continent, name 
+      FROM world
+      WHERE population >= 10000000
+      ) t1
+GROUP BY t1.continent;
+```
+
+### 8. List the continents that have a total population of at least 100 million.
+
+```sql
+SELECT continent
+FROM world
+GROUP BY continent
+HAVING SUM(population) >= 100000000;
+```
+
 
 ## 6 JOIN
 In which we join two tables; game and goals. previously music tutorial
@@ -817,7 +891,138 @@ In which we join two tables; game and goals. previously music tutorial
     </tbody>
 </table>
 
-### 13. 
+* game(id (#), mdate, stadium, team1, team2)
+* goal(matchid (#), teamid (POL), player, gtime)
+* eteam(id (POL), teamname, coach)
+
+### 1. Modify it to show the matchid and player name for all goals scored by Germany. 
+* To identify German players, check for: teamid = 'GER'
+
+```sql
+SELECT matchid, player 
+FROM goal 
+WHERE teamid LIKE 'GER';
+```
+
+### 2. Show id, stadium, team1, team2 for just game 1012
+* From the previous query you can see that Lars Bender's scored a goal in game 1012. Now we want to know what teams were playing in that match.
+* Notice in the that the column matchid in the goal table corresponds to the id column in the game table. We can look up information about game 1012 by finding that row in the game table.
+
+```sql
+SELECT id,stadium,team1,team2
+FROM game
+WHERE id = 1012;
+```
+
+### 3. Modify it to show the player, teamid, stadium and mdate for every German goal.
+* You can combine the two steps into a single query with a `JOIN`: `SELECT` * `FROM` game `JOIN` goal `ON` (id=matchid)
+* The `FROM` clause says to merge data from the goal table with that from the game table. The `ON` says how to figure out which rows in game go with which rows in goal
+* The matchid from goal must match id from game. (If we wanted to be more clear/specific we could say `ON` (game.id=goal.matchid)
+
+```sql
+SELECT player, teamid, stadium, mdate
+FROM game 
+JOIN goal ON (id=matchid)
+HAVING teamid = 'GER';
+```
+
+### 4. Show the team1, team2 and player for every goal scored by a player called Mario player `LIKE` 'Mario%'. 
+* Use the same `JOIN` as in the previous question.
+
+```sql
+SELECT team1, team2, player
+FROM game 
+JOIN goal ON (id=matchid)
+HAVING player LIKE 'Mario%';
+```
+
+### 5. Show player, teamid, coach, gtime for all goals scored in the first 10 minutes gtime<=10
+* The table eteam gives details of every national team including the coach. You can `JOIN` goal to eteam using the phrase goal `JOIN` eteam on teamid=id
+
+```sql
+SELECT player, teamid, coach, gtime
+FROM goal 
+JOIN eteam ON teamid=id
+WHERE gtime<=10;
+```
+
+### 6. List the dates of the matches and the name of the team in which 'Fernando Santos' was the team1 coach.
+* To `JOIN` game with eteam you could use either game `JOIN` eteam ON (team1=eteam.id) or game `JOIN` eteam ON (team2=eteam.id)
+* Notice that because id is a column name in both game and eteam you must specify eteam.id instead of just id
+
+```sql
+SELECT mdate, eteam.teamname
+FROM game
+JOIN eteam on game.team1 = eteam.id 
+WHERE eteam.coach = 'Fernando Santos'
+```
+
+### 7. List the player for every goal scored in a game where the stadium was 'National Stadium, Warsaw'
+
+```sql
+SELECT player
+FROM goal
+JOIN game on goal.matchid=game.id
+WHERE stadium = 'National Stadium, Warsaw';
+```
+
+### 8. Instead show the name of all players who scored a goal against Germany.
+* Select goals scored only by non-German players in matches where GER was the id of either team1 or team2.
+* You can use teamid!='GER' to prevent listing German players.
+* You can use `DISTINCT` to stop players being listed twice
+
+```sql
+SELECT DISTINCT player
+FROM game 
+JOIN goal ON goal.matchid = game.id 
+WHERE goal.teamid!='GER' AND 
+      (game.team1 = 'GER' OR game.team2 = 'GER');
+```
+
+### 9. Show teamname and the total number of goals scored. 
+* You should `COUNT(*)` in the `SELECT` line and `GROUP BY` teamname
+
+```sql
+SELECT teamname, COUNT(player)
+FROM goal 
+JOIN eteam ON eteam.id=goal.teamid
+GROUP BY teamname;
+```
+
+### 10. Show the stadium and the number of goals scored in each stadium.
+
+```sql
+SELECT stadium, COUNT(player)
+FROM goal 
+JOIN game ON goal.matchid = game.id
+GROUP BY stadium;
+```
+
+### 11. For every match involving 'POL', show the matchid, date and the number of goals scored.
+
+```sql
+SELECT t.matchid, t.mdate, COUNT(t.player)
+FROM (SELECT matchid, mdate, player
+      FROM game 
+      JOIN goal ON game.id = goal.matchid
+      WHERE (team1 = 'POL' OR team2 = 'POL')) AS t
+GROUP BY t.matchid, t.mdate
+```
+
+### 12. For every match where 'GER' scored, show matchid, match date and the number of goals scored by 'GER'
+
+```sql
+SELECT matchid, mdate, COUNT(*)
+FROM (SELECT *
+      FROM goal
+      JOIN game ON goal.matchid = game.id
+      HAVING teamid = 'GER') AS t
+GROUP BY matchid, mdate
+```
+
+### 13. List every match with the goals scored by each team as shown. 
+* This will use "`CASE WHEN`" which has not been explained in any previous exercises.
+* Notice in the query given every goal is listed. If it was a team1 goal then a 1 appears in score1, otherwise there is a 0. You could SUM this column to get a count of the goals scored by team1. Sort your result by mdate, matchid, team1 and team2.
 
 <table class="sqlmine">
     <tbody>
@@ -856,8 +1061,201 @@ In which we join two tables; game and goals. previously music tutorial
 </table>
 
 
+```sql
+SELECT t.mdate, t.team1, sum(t.score1) as score1, 
+                t.team2, sum(t.score2) as score2
+FROM (SELECT mdate, team1,
+      CASE WHEN goal.teamid=team1 THEN 1 
+           ELSE 0 
+      END AS score1, 
+      team2, 
+      CASE WHEN goal.teamid=team2 THEN 1 
+           ELSE 0 
+      END AS score2
+FROM game JOIN goal ON game.id = goal.matchid) as t
+GROUP BY t.mdate, t.team1, t.team2
+ORDER BY t.mdate, t.team1, t.team2;
+```
+
+```sql
+SELECT DISTINCT mdate, 
+team1, SUM(CASE WHEN teamid=team1 THEN 1 ELSE 0 END) AS score1, 
+team2, SUM(CASE WHEN teamid=team2 THEN 1 ELSE 0 END) AS score2
+FROM game JOIN goal ON goal.matchid = game.id
+GROUP BY mdate,team1,team2
+ORDER BY mdate,team1,team2;
+```
+
+
 ## 7 More JOIN operations
 In which we join actors to movies in the Movie Database.
+
+* movie(id (PK, 10212), title (A Kind of Loving), yr, director (FK), budget, gross)
+* actor(id (PK), name)
+* casting(movieid (PK,FK), actorid (PK,FK), ord)
+
+### 1. List the films where the yr is 1962 [Show id, title]
+
+```sql
+SELECT id, title
+FROM movie
+WHERE yr=1962;
+```
+
+### 2. Give year of 'Citizen Kane'.
+
+```sql
+SELECT yr 
+FROM movie
+WHERE title = 'Citizen Kane';
+```
+
+### 3. List all of the Star Trek movies, include the id, title and yr (all of these movies include the words Star Trek in the title). Order results by year.
+
+```sql
+SELECT id, title, yr
+FROM movie
+WHERE title LIKE '%Star Trek%'
+ORDER BY yr;
+```
+
+### 4. What id number does the actor 'Glenn Close' have?
+
+```sql
+SELECT id FROM actor WHERE name = 'Glenn Close';
+```
+
+### 5. What is the id of the film 'Casablanca'
+
+```sql
+SELECT id FROM movie WHERE title = 'Casablanca';
+```
+
+### 6. SELECT id FROM movie WHERE title = 'Casablanca';
+* The cast list is the names of the actors who were in the movie.
+* Use movieid=11768, (or whatever value you got from the previous question)
+
+```sql
+SELECT name
+FROM casting
+JOIN actor ON casting.actorid = actor.id
+WHERE movieid=11768;
+```
+
+### 7. Obtain the cast list for the film 'Alien'
+
+```sql
+SELECT name
+FROM casting
+JOIN actor ON casting.actorid = actor.id
+JOIN movie ON movie.id = casting.movieid
+WHERE title = 'Alien';
+```
+
+### 8. List the films in which 'Harrison Ford' has appeared
+
+```sql
+SELECT title
+FROM movie 
+JOIN casting ON movie.id = casting.movieid
+JOIN actor ON casting.actorid = actor.id
+WHERE name = 'Harrison Ford';
+```
+
+### 9. List the films where 'Harrison Ford' has appeared - but not in the starring role.
+* The ord field of casting gives the position of the actor. If ord=1 then this actor is in the starring role.
+
+```sql
+SELECT title
+FROM movie 
+JOIN casting ON movie.id = casting.movieid
+JOIN actor ON casting.actorid = actor.id
+WHERE name = 'Harrison Ford' AND ord > 1;
+```
+
+### 10. List the films together with the leading star for all 1962 films.
+
+```sql
+SELECT title, name
+FROM movie 
+JOIN casting ON movie.id = casting.movieid
+JOIN actor ON casting.actorid = actor.id
+WHERE yr = 1962 AND ord = 1;
+```
+
+### 11. Which were the busiest years for 'Rock Hudson', show the year and the number of movies he made each year for any year in which he made more than 2 movies.
+
+```sql
+SELECT yr,COUNT(title) 
+FROM movie 
+JOIN casting ON movie.id=movieid
+JOIN actor   ON actorid=actor.id
+WHERE name = 'Rock Hudson'
+GROUP BY yr
+HAVING COUNT(title) > 2;
+```
+
+### 12. List the film title and the leading actor for all of the films 'Julie Andrews' played in.
+* Did you get "Little Miss Marker twice"?
+* Julie Andrews starred in the 1980 remake of Little Miss Marker and not the original(1934).
+* Title is not a unique field, create a table of IDs in your subquery
+
+```sql
+-- All the movieids of movies with Julie Andrews
+SELECT movieid 
+FROM casting
+WHERE actorid IN (
+   SELECT id FROM actor
+   WHERE name='Julie Andrews');
+
+--Hence
+SELECT title, name
+FROM movie 
+JOIN casting ON movie.id=movieid
+JOIN actor   ON actorid=actor.id
+WHERE ord = 1 AND movieid IN (
+  SELECT movieid 
+  FROM casting
+  WHERE actorid IN (
+     SELECT id FROM actor
+     WHERE name='Julie Andrews'));
+```
+
+### 13. Obtain a list, in alphabetical order, of actors who've had at least 15 starring roles.
+
+```sql
+SELECT name 
+FROM actor 
+JOIN casting ON actorid = actor.id
+JOIN movie ON movieid = movie.id 
+WHERE ord = 1 AND actor.id = casting.actorid 
+GROUP BY name HAVING count(*) >= 15;
+```
+
+### 14. List the films released in the year 1978 ordered by the number of actors in the cast, then by title.
+
+```sql
+SELECT title, COUNT(actorid)
+FROM casting
+JOIN movie ON casting.movieid = movie.id
+WHERE yr = 1978
+GROUP BY title
+ORDER BY COUNT(actorid) DESC, title;
+```
+
+### 15. List all the people who have worked with 'Art Garfunkel'.
+
+```sql
+SELECT name
+FROM actor 
+JOIN casting ON actorid = actor.id
+WHERE name != 'Art Garfunkel' AND movieid IN (
+   SELECT movieid
+   FROM movie 
+   JOIN casting ON movieid = movie.id
+   JOIN actor ON actorid = actor.id
+   WHERE actor.name = 'Art Garfunkel');
+```
 
 
 ## 8 Using Null
@@ -946,9 +1344,215 @@ In which we look at teachers in departments. previously Scottish Parliament
     </tbody>
 </table>
 
+* teacher(id, dept, name, phone, mobile)
+* dept(id, name)
+
+### 1. List the teachers who have NULL for their department.
+
+```sql
+SELECT name 
+FROM teacher
+WHERE dept IS NULL;
+```
+
+### 2. Note the INNER JOIN misses the teachers with no department and the departments with no teacher.
+
+```sql
+SELECT teacher.name, dept.name
+FROM teacher
+INNER JOIN dept
+ON (teacher.dept=dept.id);
+```
+
+### 3. Use a different JOIN so that all teachers are listed.
+
+```sql
+SELECT teacher.name, dept.name
+FROM teacher
+RIGHT JOIN dept
+ON (teacher.dept=dept.id);
+```
+
+### 4. Use a different JOIN so that all departments are listed.
+* `COALESCE` takes any number of arguments and returns the first value that is not null.
+* `COALESCE(x,y,z)` = x if x is not `NULL`
+* `COALESCE(x,y,z)` = y if x is `NULL` and y is not `NULL`
+* `COALESCE(x,y,z)` = z if x and y are `NULL` but z is not `NULL`
+* `COALESCE(x,y,z)` = `NULL` if x and y and z are all `NULL`
+
+```sql
+SELECT name, COALESCE(mobile, '07986 444 2266' )
+FROM teacher;
+```
+
+### 6. Use the `COALESCE` function and a `LEFT JOIN` to print the teacher name and department name. Use the string 'None' where there is no department.
+
+```sql
+SELECT teacher.name, COALESCE(dept.name, 'None')
+FROM teacher
+LEFT JOIN dept on teacher.dept = dept.id;
+```
+
+### 7. Use `COUNT` to show the number of teachers and the number of mobile phones.
+
+```sql
+SELECT COUNT(name), COUNT(mobile)
+FROM teacher;
+```
+
+### 8. Use `COUNT` and `GROUP BY` dept.name to show each department and the number of staff. Use a RIGHT JOIN to ensure that the Engineering department is listed.
+
+```sql
+SELECT dept.name, COUNT(teacher.name) AS staff
+FROM teacher
+RIGHT JOIN dept ON teacher.dept = dept.id
+GROUP BY dept.name;
+```
+
+### 9. Use `CASE` to show the name of each teacher followed by 'Sci' if the teacher is in dept 1 or 2 and 'Art' otherwise.
+
+```sql
+SELECT 
+  name,
+  CASE
+    WHEN dept = 1 OR dept = 2 THEN 'Sci'
+    ELSE 'Art'
+  END AS subject
+FROM teacher;
+```
+
+### 10. Use `CASE` to show the name of each teacher followed by 'Sci' if the teacher is in dept 1 or 2, show 'Art' if the teacher's dept is 3 and 'None' otherwise.
+
+```sql
+SELECT 
+  name,
+  CASE
+    WHEN dept = 1 OR dept = 2 THEN 'Sci'
+    WHEN dept = 3 THEN 'Art'
+    ELSE 'None'
+  END AS subject
+FROM teacher;
+```
+
 
 ## 8+ Numeric Examples
 In which we look at a survey and deal with some more complex calculations.
+
+* nss(
+* ukprn, varchar(8)
+* institution, varchar(100)
+* subject, varchar(60)
+* level, varchar(50)
+* question, varchar(10)
+* A_STRONGLY_DISAGREE, int(11)
+* A_DISAGREE, int(11)
+* A_NEUTRAL, int(11)
+* A_AGREE, int(11)
+* A_STRONGLY_AGREE, int(11)
+* A_NEUTRAL, int(11)
+* CI_MIN, int(11)
+* score, int(11)
+* CI_MAX, int(11)
+* response, int(11)
+* sample, int(11)
+* aggregate, char(1)
+ )
+
+### 1.The example shows the number who responded for:
+* question 1
+* at 'Edinburgh Napier University'
+* studying '(8) Computer Science'
+* Show the the percentage who STRONGLY AGREE
+
+```sql
+SELECT A_STRONGLY_AGREE
+FROM nss
+WHERE question='Q01'
+AND institution='Edinburgh Napier University'
+AND subject='(8) Computer Science';
+```
+
+### 2. Show the institution and subject where the score is at least 100 for question 15.
+
+```sql
+SELECT institution, subject
+FROM nss
+WHERE question='Q15'
+AND score >= 100;
+```
+
+### 3. Show the institution and score where the score for '(8) Computer Science' is less than 50 for question 'Q15'
+
+```sql
+SELECT institution,score
+FROM nss
+WHERE question='Q15'
+AND subject='(8) Computer Science'
+AND score < 50;
+```
+
+### 4. Show the subject and total number of students who responded to question 22 for each of the subjects '(8) Computer Science' and '(H) Creative Arts and Design'.
+* You will need to use `SUM` over the response column and `GROUP BY` subject
+
+```sql
+SELECT subject, SUM(response)
+FROM nss
+WHERE question='Q22' AND (
+subject='(8) Computer Science' OR 
+subject='(H) Creative Arts and Design')
+GROUP BY subject;
+```
+
+### 5. Show the subject and total number of students who A_STRONGLY_AGREE to question 22 for each of the subjects '(8) Computer Science' and '(H) Creative Arts and Design'.
+* The A_STRONGLY_AGREE column is a percentage. To work out the total number of students who strongly agree you must multiply this percentage by the number who responded (response) and divide by 100 - take the `SUM` of that.
+
+```sql
+SELECT subject, sum(A_STRONGLY_AGREE*response/100) AS total
+FROM nss
+WHERE question='Q22' AND (
+subject='(8) Computer Science' OR 
+subject='(H) Creative Arts and Design')
+GROUP by subject;
+```
+
+### 6. Show the percentage of students who A_STRONGLY_AGREE to question 22 for the subject '(8) Computer Science' show the same figure for the subject '(H) Creative Arts and Design'.
+* Use the `ROUND` function to show the percentage without decimal places.
+
+```sql
+SELECT subject, ROUND(SUM(response*A_STRONGLY_AGREE)/SUM(response))
+FROM nss
+WHERE question='Q22'
+AND (subject='(8) Computer Science' OR
+    subject='(H) Creative Arts and Design')
+GROUP BY subject;
+```
+
+### 7. Show the average scores for question 'Q22' for each institution that include 'Manchester' in the name.
+* The column score is a percentage - you must use the method outlined above to multiply the percentage by the response and divide by the total response. Give your answer rounded to the nearest whole number.
+
+```sql
+SELECT institution, ROUND(SUM(score*response)/SUM(response)) AS avg_score
+FROM nss
+WHERE question='Q22'
+AND (institution LIKE '%Manchester%')
+GROUP BY institution;
+```
+
+### 8. Show the institution, the total sample size and the number of computing students for institutions in Manchester for 'Q01'.
+
+```sql
+SELECT nss.institution, SUM(nss.sample) as total, T.comp as compsci
+FROM nss 
+JOIN (SELECT institution, SUM(sample), SUM(sample) as comp
+      FROM nss WHERE question='Q01'
+        AND (institution LIKE '%Manchester%')
+        AND (subject='(8) Computer Science')
+      GROUP BY institution) T 
+ON nss.institution = T.institution
+WHERE nss.question='Q01'
+   AND (nss.institution LIKE '%Manchester%')
+GROUP BY nss.institution;
+```
 
 
 ## 9- Window function
